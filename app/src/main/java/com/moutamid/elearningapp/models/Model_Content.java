@@ -155,5 +155,4 @@ public class Model_Content {
         this.video_link = video_link;
     }
 
-
 }
