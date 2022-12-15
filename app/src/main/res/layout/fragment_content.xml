@@ -1,14 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".fragments.ContentFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <com.potyvideo.library.AndExoPlayerView
+        android:id="@+id/vidvw2"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        app:andexo_aspect_ratio="aspect_16_9"
+        app:andexo_show_full_screen="true"
+        app:andexo_resize_mode="Fit"
+        app:andexo_play_when_ready="true"
+        app:andexo_show_controller="true" />
 
-</FrameLayout>
+    <LinearLayout
+        android:id="@+id/lockLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/rectangle4_black"
+        android:gravity="center"
+        android:visibility="gone"
+        android:orientation="vertical">
+
+        <ImageView
+            app:tint="@color/appClr"
+            android:layout_width="62dp"
+            android:layout_height="62dp"
+            android:layout_marginBottom="25sp"
+            android:src="@drawable/ic_baseline_lock_24" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="Please Buy this Course First"
+            android:textColor="@color/white"
+            android:textSize="25sp" />
+
+    </LinearLayout>
+
+</RelativeLayout>

@@ -1,66 +1,138 @@
 package com.moutamid.elearningapp.fragments;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.MediaController;
+import android.widget.Toast;
+import android.widget.VideoView;
 
+import com.fxn.stash.Stash;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
 import com.moutamid.elearningapp.R;
+import com.moutamid.elearningapp.adapters.Adapter_Content;
+import com.moutamid.elearningapp.models.CourseIDs;
+import com.moutamid.elearningapp.models.Model_Content;
+import com.moutamid.elearningapp.utilis.Constants;
+import com.potyvideo.library.AndExoPlayerView;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link ContentFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+import java.util.ArrayList;
+import java.util.HashMap;
+
 public class ContentFragment extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    AndExoPlayerView vw;
+    String course_ID, sellerID;
+    LinearLayout lockLayout;
+    String videoURL;
 
     public ContentFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment ContentFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static ContentFragment newInstance(String param1, String param2) {
-        ContentFragment fragment = new ContentFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_content, container, false);
+        lockLayout = view.findViewById(R.id.lockLayout);
+
+        vw = view.findViewById(R.id.vidvw2);
+
+        /*vw.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                AlertDialog.Builder obj = new AlertDialog.Builder(getContext());
+                obj.setTitle("Playback Finished!");
+                obj.setIcon(R.mipmap.ic_launcher);
+                MyListener m = new MyListener();
+                obj.setPositiveButton("Replay", m);
+                obj.setNegativeButton("Next", m);
+                obj.setMessage("Want to replay or play next video?");
+                obj.show();
+            }
+        });*/
+
+        course_ID = Stash.getString("ID");
+        sellerID = Stash.getString("sellerID");
+
+        Constants.databaseReference().child("course_contents")
+                .child(course_ID)
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            Model_Content model = snapshot.getValue(Model_Content.class);
+                            videoURL = model.getVideo_link();
+                            if (Constants.auth().getCurrentUser().getUid() != null){
+                                Constants.databaseReference().child("users").child(Constants.auth().getCurrentUser().getUid())
+                                    .child("enrolled").child(course_ID)
+                                    .addValueEventListener(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot snapshot2) {
+                                            if(snapshot2.exists()) {
+                                                CourseIDs model = snapshot2.getValue(CourseIDs.class);
+                                                if (model.isEnroll()) {
+                                                    setVideo(videoURL);
+                                                    lockLayout.setVisibility(View.GONE);
+                                                } else {
+                                                    lockLayout.setVisibility(View.VISIBLE);
+                                                }
+                                            } else {
+                                                lockLayout.setVisibility(View.VISIBLE);
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError e) {
+                                            Toast.makeText(view.getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                                            Log.d("Checking21", "error");
+                                            lockLayout.setVisibility(View.VISIBLE);
+                                        }
+                                    });
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Toast.makeText(view.getContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+
+        // video name should be in lower case alphabet.
+        // videolist.add(R.raw.vid);
+
+        return view;
     }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
+    private void setVideo(String videoURL) {
+        /*String uriPath
+                = "android.resource://"
+                + "com.moutamid.e_learningapp/raw" + "/" + integer;*/
+        Uri uri = Uri.parse(videoURL);
+        HashMap<String, String> hashMap = new HashMap<>();
+        hashMap.put("foo","bar");
+        vw.setSource(videoURL, hashMap);
+        vw.startPlayer();
     }
 
+
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_content, container, false);
+    public void onPause() {
+        vw.pausePlayer();
+        super.onPause();
     }
+
 }

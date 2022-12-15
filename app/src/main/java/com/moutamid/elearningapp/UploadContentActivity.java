@@ -22,6 +22,7 @@ import com.blogspot.atifsoftwares.animatoolib.Animatoo;
 import com.github.dhaval2404.imagepicker.ImagePicker;
 import com.google.android.material.textfield.TextInputLayout;
 import com.moutamid.elearningapp.models.Model_Content;
+import com.moutamid.elearningapp.models.UserModel;
 import com.moutamid.elearningapp.utilis.Constants;
 
 import java.util.UUID;
@@ -142,40 +143,38 @@ public class UploadContentActivity extends AppCompatActivity {
 
     private void getCourseData() {
         Constants.databaseReference().child("users").child(Constants.auth().getCurrentUser().getUid())
-                .get().addOnCompleteListener(task -> {
-                    if (task.isSuccessful()){
-                        tutor = task.getResult().child("name").getValue().toString();
-                    } else {
-                        Toast.makeText(this, task.getException().getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                });
-        String l = getVideoLength();
-        model_content = new Model_Content(
-                uuID,
-                name.getText().toString(),
-                desc.getText().toString(),
-                "",
-                "",
-                0,
-                tutor,
-                l,
-                false,
-                videoLink,
-                imageLink,
-                et_category.getEditText().getText().toString(),
-                Long.parseLong(price.getText().toString()),
-                Constants.auth().getCurrentUser().getUid()
-        );
-        Constants.databaseReference().child("course_contents")
-                .child(uuID).setValue(model_content)
-                .addOnSuccessListener(unused -> {
-                    Toast.makeText(getApplicationContext(), "Course Uploaded Successfully", Toast.LENGTH_SHORT).show();
-                    Intent homeIntent = new Intent(UploadContentActivity.this, MainActivity.class);
-                    startActivity(homeIntent);
-                    Animatoo.animateFade(UploadContentActivity.this);
-                    finish();
+                .get().addOnSuccessListener(dataSnapshot -> {
+                    String l = getVideoLength();
+                    tutor = dataSnapshot.getValue(UserModel.class).getName();
+                    model_content = new Model_Content(
+                            uuID,
+                            name.getText().toString(),
+                            desc.getText().toString(),
+                            "",
+                            "",
+                            0,
+                            tutor,
+                            l,
+                            false,
+                            videoLink,
+                            imageLink,
+                            et_category.getEditText().getText().toString(),
+                            Long.parseLong(price.getText().toString()),
+                            Constants.auth().getCurrentUser().getUid()
+                    );
+                    Constants.databaseReference().child("course_contents")
+                            .child(uuID).setValue(model_content)
+                            .addOnSuccessListener(unused -> {
+                                Toast.makeText(getApplicationContext(), "Course Uploaded Successfully", Toast.LENGTH_SHORT).show();
+                                Intent homeIntent = new Intent(UploadContentActivity.this, MainActivity.class);
+                                startActivity(homeIntent);
+                                Animatoo.animateFade(UploadContentActivity.this);
+                                finish();
+                            }).addOnFailureListener(e -> {
+                                Toast.makeText(UploadContentActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                            });
                 }).addOnFailureListener(e -> {
-                    Toast.makeText(UploadContentActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
     }
 
