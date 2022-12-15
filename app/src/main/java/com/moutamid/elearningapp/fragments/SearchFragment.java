@@ -78,8 +78,8 @@ public class SearchFragment extends Fragment {
                     }
 
                     @Override
-                    public void onCancelled(@NonNull DatabaseError e) {
-                        Toast.makeText(view.getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Toast.makeText(view.getContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
 

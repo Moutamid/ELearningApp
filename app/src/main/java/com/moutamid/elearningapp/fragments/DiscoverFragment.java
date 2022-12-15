@@ -2,6 +2,7 @@ package com.moutamid.elearningapp.fragments;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -12,6 +13,8 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
 import com.moutamid.elearningapp.R;
 import com.moutamid.elearningapp.adapters.Adapter_Courses;
 import com.moutamid.elearningapp.models.Model_Content;
@@ -40,18 +43,22 @@ public class DiscoverFragment extends Fragment {
         detail_recycler.setHasFixedSize(false);
 
         Constants.databaseReference().child("course_contents")
-                .get()
-                .addOnSuccessListener(dataSnapshot -> {
-                    for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                        Model_Content model = ds.getValue(Model_Content.class);
-                        modelCoursesArrayList.add(model);
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        for (DataSnapshot ds : snapshot.getChildren()) {
+                            Model_Content model = ds.getValue(Model_Content.class);
+                            modelCoursesArrayList.add(model);
+                        }
+                        adapter_courses = new Adapter_Courses(view.getContext(), modelCoursesArrayList);
+                        detail_recycler.setAdapter(adapter_courses);
+                        adapter_courses.notifyDataSetChanged();
                     }
-                    adapter_courses = new Adapter_Courses(view.getContext(), modelCoursesArrayList);
-                    detail_recycler.setAdapter(adapter_courses);
-                    adapter_courses.notifyDataSetChanged();
-                })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(view.getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Toast.makeText(view.getContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
                 });
         return view;
     }

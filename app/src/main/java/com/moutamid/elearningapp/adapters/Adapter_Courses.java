@@ -14,6 +14,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -24,6 +25,9 @@ import com.google.android.gms.dynamic.IObjectWrapper;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ValueEventListener;
 import com.moutamid.elearningapp.R;
 import com.moutamid.elearningapp.SignUpActivity;
 import com.moutamid.elearningapp.models.CourseIDs;
@@ -45,6 +49,9 @@ public class Adapter_Courses extends RecyclerView.Adapter<Adapter_Courses.Holder
         this.context = context;
         this.androidArrayList = androidArrayList;
         listAll = new ArrayList<>(androidArrayList);
+        progressDialog = new ProgressDialog(context);
+        progressDialog.setTitle("Enrolling into this Course");
+        progressDialog.setCancelable(false);
     }
 
     @NonNull
@@ -69,23 +76,32 @@ public class Adapter_Courses extends RecyclerView.Adapter<Adapter_Courses.Holder
 
         try{
             Constants.databaseReference().child("users").child(Constants.auth().getCurrentUser().getUid())
-                    .child("enrolled").get()
-                    .addOnSuccessListener(dataSnapshot -> {
-                        for (DataSnapshot ds : dataSnapshot.getChildren()){
-                            CourseIDs model = ds.getValue(CourseIDs.class);
-                            assert model != null;
-                            if (modelAndroid.getCourse_id().equals(model.getID())) {
-                                if (model.isEnroll()) {
-                                    holder.enroll.setVisibility(View.GONE);
-                                    // notifyDataSetChanged();
+                    .child("enrolled")
+                    .addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            for (DataSnapshot ds : snapshot.getChildren()){
+                                CourseIDs model = ds.getValue(CourseIDs.class);
+                                assert model != null;
+                                if (modelAndroid.getCourse_id().equals(model.getID())) {
+                                    if (model.isEnroll()) {
+                                        holder.enroll.setVisibility(View.GONE);
+                                        Adapter_Courses.this.notifyItemChanged(position);
+                                    }
                                 }
                             }
                         }
-                    })
-                    .addOnFailureListener(e -> {});
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+
+                        }
+                    });
         } catch (Exception e){
 
         }
+
+        HashMap<String, Object> update = new HashMap<>();
 
         if (modelAndroid.isIs_bestSeller()){
             holder.status.setVisibility(View.VISIBLE);
@@ -110,17 +126,28 @@ public class Adapter_Courses extends RecyclerView.Adapter<Adapter_Courses.Holder
         courseIDs.put("sellerID", modelAndroid.getSellerID());
 
         holder.enroll.setOnClickListener(view -> {
-            Toast.makeText(context, "buttn", Toast.LENGTH_SHORT).show();
             if (Constants.auth().getCurrentUser() != null){
-                Toast.makeText(context, "btn2", Toast.LENGTH_SHORT).show();
+                progressDialog.show();
+                update.put("member", modelAndroid.getMember() + 1);
                 Constants.databaseReference().child("users").child(Constants.auth().getCurrentUser().getUid())
                         .child("enrolled").child(modelAndroid.getCourse_id()).setValue(courseIDs)
                         .addOnSuccessListener(unused -> {
-                            Toast.makeText(context, "Enrolled To Course " + modelAndroid.getTitle() , Toast.LENGTH_SHORT).show();
+                            Constants.databaseReference().child("course_contents").child(modelAndroid.getCourse_id())
+                                    .updateChildren(update)
+                                    .addOnSuccessListener(unused2 -> {
+                                        Adapter_Courses.this.notifyItemChanged(holder.getAbsoluteAdapterPosition());
+                                        progressDialog.dismiss();
+                                        Toast.makeText(context, "Enrolled To Course " + modelAndroid.getTitle() , Toast.LENGTH_SHORT).show();
+                                    }).addOnFailureListener(e -> {
+                                        progressDialog.dismiss();
+                                        Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
+                                    });
                         })
                         .addOnFailureListener(e -> {
+                            progressDialog.dismiss();
                             Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
                         });
+
             } else {
                 Intent intent = new Intent(context , SignUpActivity.class);
                 context.startActivity(intent);
