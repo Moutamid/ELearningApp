@@ -13,6 +13,7 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.blogspot.atifsoftwares.animatoolib.Animatoo;
+import com.bumptech.glide.Glide;
 import com.moutamid.elearningapp.R;
 import com.moutamid.elearningapp.models.Model_Chat;
 
@@ -39,15 +40,10 @@ public class Adapter_Chat extends RecyclerView.Adapter<Adapter_Chat.HolderAndroi
     public void onBindViewHolder(@NonNull HolderAndroid holder, int position) {
         Model_Chat modelAndroid = androidArrayList.get(position);
 
-        String title_tv = modelAndroid.getTitle();
-        String tutor_tv = modelAndroid.getTutor();
+        holder.title.setText(modelAndroid.getTitle());
+        holder.tutor.setText(modelAndroid.getTutor());
 
-        int image_1 = modelAndroid.getImage();
-
-        holder.title.setText(title_tv);
-        holder.tutor.setText(tutor_tv);
-
-        holder.image.setImageResource(image_1);
+        Glide.with(context).load(modelAndroid.getImage()).placeholder(R.drawable.profile_icon).into(holder.image);
 
         holder.card_chat.setOnClickListener(new View.OnClickListener() {
             @Override

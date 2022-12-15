@@ -1,17 +1,25 @@
 package com.moutamid.elearningapp.models;
 
 public class Model_Message {
-    String message;
-    int sender_img;
-    String currenttime;
+    private String message;
+    private String senderUid;
+    private String receiverUid;
+    private long timestamp;
+    private String type;
+    private String mode;
+    private int unreadChatCount = 0;
 
     public Model_Message() {
     }
 
-    public Model_Message(String message, int sender_img, String currenttime) {
+    public Model_Message(String message, String senderUid, String receiverUid, long timestamp, String type, String mode, int unreadChatCount) {
         this.message = message;
-        this.sender_img = sender_img;
-        this.currenttime = currenttime;
+        this.senderUid = senderUid;
+        this.receiverUid = receiverUid;
+        this.timestamp = timestamp;
+        this.type = type;
+        this.mode = mode;
+        this.unreadChatCount = unreadChatCount;
     }
 
     public String getMessage() {
@@ -22,19 +30,51 @@ public class Model_Message {
         this.message = message;
     }
 
-    public int getSender_img() {
-        return sender_img;
+    public String getSenderUid() {
+        return senderUid;
     }
 
-    public void setSender_img(int sender_img) {
-        this.sender_img = sender_img;
+    public void setSenderUid(String senderUid) {
+        this.senderUid = senderUid;
     }
 
-    public String getCurrenttime() {
-        return currenttime;
+    public String getReceiverUid() {
+        return receiverUid;
     }
 
-    public void setCurrenttime(String currenttime) {
-        this.currenttime = currenttime;
+    public void setReceiverUid(String receiverUid) {
+        this.receiverUid = receiverUid;
+    }
+
+    public long getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(long timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getMode() {
+        return mode;
+    }
+
+    public void setMode(String mode) {
+        this.mode = mode;
+    }
+
+    public int getUnreadChatCount() {
+        return unreadChatCount;
+    }
+
+    public void setUnreadChatCount(int unreadChatCount) {
+        this.unreadChatCount = unreadChatCount;
     }
 }

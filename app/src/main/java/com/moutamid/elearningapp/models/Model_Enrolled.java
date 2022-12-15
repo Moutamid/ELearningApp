@@ -1,8 +1,8 @@
 package com.moutamid.elearningapp.models;
 
 public class Model_Enrolled {
-    String title , tutor ;
-    int image ;
+    String title, tutor;
+    int image;
 
     public Model_Enrolled() {
     }

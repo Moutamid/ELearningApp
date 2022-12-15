@@ -37,7 +37,7 @@ public class Adapter_Enrolled extends RecyclerView.Adapter<Adapter_Enrolled.Hold
         Model_Content modelAndroid = androidArrayList.get(position);
 
         String title_tv = modelAndroid.getTitle();
-        String tutor_tv = modelAndroid.getTutor();
+        String tutor_tv = "By " + modelAndroid.getTutor();
 
         holder.title.setText(title_tv);
         holder.tutor.setText(tutor_tv);

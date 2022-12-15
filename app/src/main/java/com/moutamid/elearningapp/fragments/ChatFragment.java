@@ -2,65 +2,80 @@ package com.moutamid.elearningapp.fragments;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
 import com.moutamid.elearningapp.R;
+import com.moutamid.elearningapp.models.CourseIDs;
+import com.moutamid.elearningapp.models.Model_Chat;
+import com.moutamid.elearningapp.utilis.Constants;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link ChatFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+import java.util.ArrayList;
+import java.util.Objects;
+
 public class ChatFragment extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    RecyclerView chatRC;
+    ArrayList<Model_Chat> chats;
+    ArrayList<String> tutorIDs;
 
     public ChatFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment ChatFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static ChatFragment newInstance(String param1, String param2) {
-        ChatFragment fragment = new ChatFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_chat, container, false);
+        chatRC = view.findViewById(R.id.chatRC);
+
+        chatRC.setHasFixedSize(false);
+        chatRC.setLayoutManager(new LinearLayoutManager(view.getContext()));
+
+        chats = new ArrayList<>();
+        tutorIDs = new ArrayList<>();
+
+        Constants.databaseReference().child("users").child(Objects.requireNonNull(Constants.auth().getCurrentUser()).getUid())
+                .child("enrolled").get()
+                .addOnSuccessListener(dataSnapshot -> {
+                    for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                        CourseIDs model = ds.getValue(CourseIDs.class);
+                        if(model.isEnroll()) {
+                            tutorIDs.add(model.getSellerID());
+                        }
+                    }
+                    getChats();
+                }).addOnFailureListener(e -> {
+                    Toast.makeText(view.getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
+
+        return view;
     }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+    private void getChats() {
+        for (int i = 0; i < tutorIDs.size(); i++) {
+            Constants.databaseReference().child(tutorIDs.get(i))
+                    .child(Constants.auth().getCurrentUser().getUid())
+                    .addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+
+                        }
+                    });
         }
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_chat, container, false);
     }
 }
