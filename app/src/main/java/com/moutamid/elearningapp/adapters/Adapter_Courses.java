@@ -28,6 +28,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
+import com.moutamid.elearningapp.DisplayActivity;
 import com.moutamid.elearningapp.R;
 import com.moutamid.elearningapp.SignUpActivity;
 import com.moutamid.elearningapp.models.CourseIDs;
@@ -112,12 +113,11 @@ public class Adapter_Courses extends RecyclerView.Adapter<Adapter_Courses.Holder
         Glide.with(context).load(modelAndroid.getImage()).into(holder.image);
 
         holder.itemView.setOnClickListener(v -> {
-            Toast.makeText(context, "clicked", Toast.LENGTH_SHORT).show();
-            /*Intent intent = new Intent(context , Display_Activity.class);
+            Intent intent = new Intent(context , DisplayActivity.class);
             Stash.put("ID", modelAndroid.getCourse_id());
             Stash.put("sellerID", modelAndroid.getSellerID());
             context.startActivity(intent);
-            Animatoo.animateFade(context);*/
+            Animatoo.animateFade(context);
         });
 
         HashMap<String, Object> courseIDs = new HashMap<>();
