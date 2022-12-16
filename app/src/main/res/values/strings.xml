@@ -8,4 +8,6 @@
     </string-array>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="hi_i_am_reciver">Hi, I am reciver</string>
+    <string name="hi">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Distinctio, et quasi quod quos reiciendis vel.</string>
 </resources>

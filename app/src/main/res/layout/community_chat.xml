@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="@android:color/transparent">
-
+    android:layout_height="wrap_content">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -12,28 +10,25 @@
         android:layout_marginTop="10dp"
         android:orientation="horizontal">
 
-        <TextView
-            android:id="@+id/time_chat"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="11:25 PM"
-            android:layout_weight="3"
-            android:padding="6dp"
-            android:gravity="left|center_vertical"
-            android:textColor="#808080"/>
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/sender_img"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="bottom"
+            android:layout_margin="5dp"
+            android:src="@drawable/boy"/>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:background="@drawable/right_msg"
+            android:background="@drawable/left_msg"
             android:padding="10dp"
             android:orientation="vertical">
 
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:visibility="gone"
                 android:orientation="horizontal">
 
                 <TextView
@@ -61,20 +56,20 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="@string/hi"
-                android:textSize="15sp"
-                android:textColor="@color/white"
-                android:background="@drawable/right_msg"/>
+                android:textColor="@color/black"
+                android:layout_marginTop="5dp"
+                android:textSize="15sp"/>
 
         </LinearLayout>
 
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/sender_img"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_gravity="bottom"
-            android:layout_margin="5dp"
-            android:visibility="gone"
-            android:src="@drawable/boy"/>
-
+        <TextView
+            android:id="@+id/time_chat"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="11:28 PM"
+            android:layout_weight="2"
+            android:padding="6dp"
+            android:gravity="right|center_vertical"
+            android:textColor="#808080"/>
     </LinearLayout>
 </RelativeLayout>

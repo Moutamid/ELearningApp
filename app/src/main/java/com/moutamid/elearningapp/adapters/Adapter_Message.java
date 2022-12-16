@@ -9,6 +9,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.moutamid.elearningapp.R;
 import com.moutamid.elearningapp.models.Model_Message;
 
@@ -45,12 +46,12 @@ public class Adapter_Message extends RecyclerView.Adapter<Adapter_Message.Holder
         Model_Message modelAndroid = androidArrayList.get(position);
 
         String message = modelAndroid.getMessage();
-        String time = modelAndroid.getCurrenttime();
-        int image = modelAndroid.getSender_img();
+        //String time = modelAndroid.g();
+        //int image = modelAndroid.getSender_img();
 
         holder.message_chat.setText(message);
-        holder.time_chat.setText(time);
-        holder.sender_img.setImageResource(image);
+        holder.time_chat.setText("time");
+        Glide.with(context).load(R.drawable.profile_icon).into(holder.sender_img);
     }
 
     @Override

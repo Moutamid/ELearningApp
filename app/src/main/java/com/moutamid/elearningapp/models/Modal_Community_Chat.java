@@ -2,16 +2,46 @@ package com.moutamid.elearningapp.models;
 
 public class Modal_Community_Chat {
     String message;
-    int sender_img;
-    String currenttime;
+    String time;
+    String userID;
+    String name;
+    String image;
+    boolean isInstructor;
 
     public Modal_Community_Chat() {
     }
 
-    public Modal_Community_Chat(String message, int sender_img, String currenttime) {
+    public Modal_Community_Chat(String message, String time, String userID, String name, String image, boolean isInstructor) {
         this.message = message;
-        this.sender_img = sender_img;
-        this.currenttime = currenttime;
+        this.time = time;
+        this.userID = userID;
+        this.name = name;
+        this.image = image;
+        this.isInstructor = isInstructor;
+    }
+
+    public boolean isInstructor() {
+        return isInstructor;
+    }
+
+    public void setInstructor(boolean instructor) {
+        isInstructor = instructor;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getMessage() {
@@ -22,19 +52,19 @@ public class Modal_Community_Chat {
         this.message = message;
     }
 
-    public int getSender_img() {
-        return sender_img;
+    public String getTime() {
+        return time;
     }
 
-    public void setSender_img(int sender_img) {
-        this.sender_img = sender_img;
+    public void setTime(String time) {
+        this.time = time;
     }
 
-    public String getCurrenttime() {
-        return currenttime;
+    public String getUserID() {
+        return userID;
     }
 
-    public void setCurrenttime(String currenttime) {
-        this.currenttime = currenttime;
+    public void setUserID(String userID) {
+        this.userID = userID;
     }
 }
