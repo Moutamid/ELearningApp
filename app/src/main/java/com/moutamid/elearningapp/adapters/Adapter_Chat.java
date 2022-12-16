@@ -14,17 +14,23 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.blogspot.atifsoftwares.animatoolib.Animatoo;
 import com.bumptech.glide.Glide;
+import com.moutamid.elearningapp.ChatActivity;
 import com.moutamid.elearningapp.R;
+import com.moutamid.elearningapp.models.Conversation;
 import com.moutamid.elearningapp.models.Model_Chat;
+import com.moutamid.elearningapp.utilis.Constants;
 
 import java.util.ArrayList;
 
 public class Adapter_Chat extends RecyclerView.Adapter<Adapter_Chat.HolderAndroid> {
 
     private Context context;
-    private ArrayList<Model_Chat> androidArrayList;
+    private ArrayList<Conversation> androidArrayList;
 
-    public Adapter_Chat(Context context, ArrayList<Model_Chat> androidArrayList) {
+    private static final int MSG_TYPE_LEFT = 0;
+    private static final int MSG_TYPE_RIGHT = 1;
+
+    public Adapter_Chat(Context context, ArrayList<Conversation> androidArrayList) {
         this.context = context;
         this.androidArrayList = androidArrayList;
     }
@@ -32,28 +38,20 @@ public class Adapter_Chat extends RecyclerView.Adapter<Adapter_Chat.HolderAndroi
     @NonNull
     @Override
     public HolderAndroid onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.row_chat, parent, false);
+        View view;
+        if (viewType == MSG_TYPE_LEFT) {
+            view = LayoutInflater.from(context).inflate(R.layout.row_chat_left, parent, false);
+        } else {
+            view = LayoutInflater.from(context).inflate(R.layout.row_chat_right, parent, false);
+        }
         return new HolderAndroid(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull HolderAndroid holder, int position) {
-        Model_Chat modelAndroid = androidArrayList.get(position);
-
-        holder.title.setText(modelAndroid.getTitle());
-        holder.tutor.setText(modelAndroid.getTutor());
-
-        Glide.with(context).load(modelAndroid.getImage()).placeholder(R.drawable.profile_icon).into(holder.image);
-
-        holder.card_chat.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                /*Intent intent = new Intent(context , Chat_Activity.class);
-                context.startActivity(intent);
-                Animatoo.animateSlideUp(context);
-                ((Activity)context).finish();*/
-            }
-        });
+        Conversation modelAndroid = androidArrayList.get(position);
+        holder.message.setText(modelAndroid.getMessage());
+        holder.time.setText(modelAndroid.getTime());
     }
 
     @Override
@@ -61,20 +59,18 @@ public class Adapter_Chat extends RecyclerView.Adapter<Adapter_Chat.HolderAndroi
         return androidArrayList.size();
     }
 
+    @Override
+    public int getItemViewType(int position) {
+        //get currently signed in user
+        return Constants.auth().getCurrentUser().getUid().equals(androidArrayList.get(position).getSenderID()) ? MSG_TYPE_RIGHT : MSG_TYPE_LEFT;
+    }
+
     class HolderAndroid extends RecyclerView.ViewHolder {
-
-        private ImageView image ;
-        private TextView title , tutor ;
-        private CardView card_chat;
-
+        private TextView message, time;
         HolderAndroid(@NonNull View itemView) {
             super(itemView);
-
-            image = itemView.findViewById(R.id.chat_img);
-            title = itemView.findViewById(R.id.chat_title);
-            tutor = itemView.findViewById(R.id.chat_tutor);
-            card_chat = itemView.findViewById(R.id.card_chat);
-
+            message = itemView.findViewById(R.id.message_chat);
+            time = itemView.findViewById(R.id.time_chat);
         }
     }
 }

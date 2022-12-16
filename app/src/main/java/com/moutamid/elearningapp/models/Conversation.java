@@ -1,90 +1,69 @@
 package com.moutamid.elearningapp.models;
 
 public class Conversation {
-    private String userUid;
-    private String chatWithId;
-    private String chatId;
-    private String lastMessage;
-    private String type;
-    private long timestamp;
-    private int unreadChatCount = 0;
+    String message;
+    String time;
+    String senderID;
+    String image;
+    long timestamps;
+    String name;
 
-    public Conversation() {
+    public Conversation() {}
+
+    public Conversation(String message, String time, String senderID, String image, long timestamps, String name) {
+        this.message = message;
+        this.time = time;
+        this.senderID = senderID;
+        this.image = image;
+        this.timestamps = timestamps;
+        this.name = name;
     }
 
-    public Conversation(String type,String userUid, String chatWithId, String lastMessage,
-                        long timestamp, int unreadChatCount) {
-        this.type = type;
-        this.userUid = userUid;
-        this.chatWithId = chatWithId;
-        this.lastMessage = lastMessage;
-        this.timestamp = timestamp;
-        this.unreadChatCount = unreadChatCount;
+    public String getName() {
+        return name;
     }
 
-    public Conversation(String type,String userUid, String chatWithId, String lastMessage,
-                        long timestamp) {
-        this.type = type;
-        this.userUid = userUid;
-        this.chatWithId = chatWithId;
-        this.lastMessage = lastMessage;
-        this.timestamp = timestamp;
+    public void setName(String name) {
+        this.name = name;
     }
 
-
-    public String getType() {
-        return type;
+    public String getMessage() {
+        return message;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setMessage(String message) {
+        this.message = message;
     }
 
-    public String getUserUid() {
-        return userUid;
+    public String getTime() {
+        return time;
     }
 
-    public void setUserUid(String userUid) {
-        this.userUid = userUid;
+    public void setTime(String time) {
+        this.time = time;
     }
 
-    public String getChatWithId() {
-        return chatWithId;
+    public String getSenderID() {
+        return senderID;
     }
 
-    public void setChatWithId(String chatWith) {
-        this.chatWithId = chatWith;
+    public void setSenderID(String senderID) {
+        this.senderID = senderID;
     }
 
-    public String getChatId() {
-        return chatId;
+    public String getImage() {
+        return image;
     }
 
-    public void setChatId(String chatId) {
-        this.chatId = chatId;
+    public void setImage(String image) {
+        this.image = image;
     }
 
-    public String getLastMessage() {
-        return lastMessage;
+    public long getTimestamps() {
+        return timestamps;
     }
 
-    public void setLastMessage(String lastMessage) {
-        this.lastMessage = lastMessage;
-    }
-
-    public long getTimestamp() {
-        return timestamp;
-    }
-
-    public void setTimestamp(long timestamp) {
-        this.timestamp = timestamp;
-    }
-
-    public int getUnreadChatCount() {
-        return unreadChatCount;
-    }
-
-    public void setUnreadChatCount(int unreadChatCount) {
-        this.unreadChatCount = unreadChatCount;
+    public void setTimestamps(long timestamps) {
+        this.timestamps = timestamps;
     }
 }

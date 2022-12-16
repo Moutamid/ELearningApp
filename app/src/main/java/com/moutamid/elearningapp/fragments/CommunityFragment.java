@@ -32,6 +32,7 @@ import com.moutamid.elearningapp.models.Modal_Community_Chat;
 import com.moutamid.elearningapp.models.UserModel;
 import com.moutamid.elearningapp.utilis.Constants;
 
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -112,11 +113,12 @@ public class CommunityFragment extends Fragment {
                 date = new Date();
                 UID = UUID.randomUUID().toString();
                 String d = format.format(date);
+                // Timestamp timestamps = new Timestamp(date.getTime());
 
                 Constants.databaseReference().child("users").child(Constants.auth().getCurrentUser().getUid()).addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        modelChat = new Modal_Community_Chat(mesg.getText().toString(), d, Constants.auth().getCurrentUser().getUid(), snapshot.getValue(UserModel.class).getName(), snapshot.getValue(UserModel.class).getImage(), snapshot.getValue(UserModel.class).isInstructor());
+                        modelChat = new Modal_Community_Chat(mesg.getText().toString(), d, Constants.auth().getCurrentUser().getUid(), snapshot.getValue(UserModel.class).getName(), snapshot.getValue(UserModel.class).getImage(), snapshot.getValue(UserModel.class).isInstructor(), date.getTime());
                         Constants.databaseReference().child("community_chat").child(course_ID)
                                 .child(UID)
                                 .setValue(modelChat).addOnSuccessListener(unused -> {
@@ -144,7 +146,7 @@ public class CommunityFragment extends Fragment {
                         if (snapshot.exists()){
                             getModelChat = snapshot.getValue(Modal_Community_Chat.class);
                             listChat.add(getModelChat);
-                            listChat.sort(Comparator.comparing(Modal_Community_Chat::getTime));
+                            listChat.sort(Comparator.comparing(Modal_Community_Chat::getTimestamps));
                             adapterChat = new Adapter_Community_Chat(context, listChat);
                             rc_community.setAdapter(adapterChat);
                             adapterChat.notifyItemInserted(listChat.size()-1);

@@ -57,7 +57,7 @@ public class SplashScreenActivity extends AppCompatActivity implements Connectio
                 @Override
                 public void run()
                 {
-                    Intent homeIntent = new Intent(SplashScreenActivity.this, MainActivity.class);
+                    Intent homeIntent = new Intent(SplashScreenActivity.this, ChatActivity.class);
                     startActivity(homeIntent);
                     Animatoo.animateSlideDown(SplashScreenActivity.this);
                     finish();

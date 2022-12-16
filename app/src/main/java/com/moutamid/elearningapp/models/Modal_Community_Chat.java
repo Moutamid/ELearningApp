@@ -7,17 +7,27 @@ public class Modal_Community_Chat {
     String name;
     String image;
     boolean isInstructor;
+    long timestamps;
 
     public Modal_Community_Chat() {
     }
 
-    public Modal_Community_Chat(String message, String time, String userID, String name, String image, boolean isInstructor) {
+    public Modal_Community_Chat(String message, String time, String userID, String name, String image, boolean isInstructor, long timestamps) {
         this.message = message;
         this.time = time;
         this.userID = userID;
         this.name = name;
         this.image = image;
         this.isInstructor = isInstructor;
+        this.timestamps = timestamps;
+    }
+
+    public long getTimestamps() {
+        return timestamps;
+    }
+
+    public void setTimestamps(long timestamps) {
+        this.timestamps = timestamps;
     }
 
     public boolean isInstructor() {

@@ -3,15 +3,24 @@ package com.moutamid.elearningapp.models;
 public class CourseIDs {
     String ID;
     boolean enroll;
-    String sellerID;
+    String sellerID, userID;
 
     public CourseIDs() {
     }
 
-    public CourseIDs(String ID, boolean enrolled, String sellerID) {
+    public CourseIDs(String ID, boolean enroll, String sellerID, String userID) {
         this.ID = ID;
-        this.enroll = enrolled;
+        this.enroll = enroll;
         this.sellerID = sellerID;
+        this.userID = userID;
+    }
+
+    public String getUserID() {
+        return userID;
+    }
+
+    public void setUserID(String userID) {
+        this.userID = userID;
     }
 
     public String getSellerID() {

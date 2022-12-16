@@ -31,13 +31,18 @@ import com.google.firebase.database.ValueEventListener;
 import com.moutamid.elearningapp.DisplayActivity;
 import com.moutamid.elearningapp.R;
 import com.moutamid.elearningapp.SignUpActivity;
+import com.moutamid.elearningapp.models.Conversation;
 import com.moutamid.elearningapp.models.CourseIDs;
 import com.moutamid.elearningapp.models.Model_Content;
+import com.moutamid.elearningapp.models.UserModel;
 import com.moutamid.elearningapp.utilis.Constants;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.UUID;
 
 public class Adapter_Courses extends RecyclerView.Adapter<Adapter_Courses.HolderAndroid> implements Filterable {
 
@@ -45,6 +50,8 @@ public class Adapter_Courses extends RecyclerView.Adapter<Adapter_Courses.Holder
     private ArrayList<Model_Content> androidArrayList;
     ArrayList<Model_Content> listAll;
     ProgressDialog progressDialog;
+    SimpleDateFormat format = new SimpleDateFormat("HH:mm aa");
+    Date date;
 
     public Adapter_Courses(Context context, ArrayList<Model_Content> androidArrayList) {
         this.context = context;
@@ -75,7 +82,7 @@ public class Adapter_Courses extends RecyclerView.Adapter<Adapter_Courses.Holder
         holder.time.setText(modelAndroid.getVideo_length());
         holder.desc.setText(modelAndroid.getDesc());
 
-        try{
+        try {
             Constants.databaseReference().child("users").child(Constants.auth().getCurrentUser().getUid())
                     .child("enrolled")
                     .addValueEventListener(new ValueEventListener() {
@@ -123,6 +130,7 @@ public class Adapter_Courses extends RecyclerView.Adapter<Adapter_Courses.Holder
         HashMap<String, Object> courseIDs = new HashMap<>();
         courseIDs.put("ID", modelAndroid.getCourse_id());
         courseIDs.put("enroll", true);
+        courseIDs.put("userID", Constants.auth().getCurrentUser().getUid());
         courseIDs.put("sellerID", modelAndroid.getSellerID());
 
         holder.enroll.setOnClickListener(view -> {
@@ -138,6 +146,7 @@ public class Adapter_Courses extends RecyclerView.Adapter<Adapter_Courses.Holder
                                         Adapter_Courses.this.notifyItemChanged(holder.getAbsoluteAdapterPosition());
                                         progressDialog.dismiss();
                                         Toast.makeText(context, "Enrolled To Course " + modelAndroid.getTitle() , Toast.LENGTH_SHORT).show();
+                                        sendMessage(position);
                                     }).addOnFailureListener(e -> {
                                         progressDialog.dismiss();
                                         Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
@@ -154,6 +163,63 @@ public class Adapter_Courses extends RecyclerView.Adapter<Adapter_Courses.Holder
                 Animatoo.animateFade(context);
             }
         });
+    }
+
+    private void sendMessage(int position) {
+        date = new Date();
+        String d = format.format(date);
+
+        Constants.databaseReference().child("users")
+                .child(Constants.auth().getCurrentUser().getUid())
+                .get().addOnSuccessListener(dataSnapshot -> {
+                    Conversation conversation = new Conversation(
+                            "Thanks! For Enrolling into My Course If you need any help feel free to text me 😊",
+                            d,
+                            androidArrayList.get(position).getSellerID(),
+                            dataSnapshot.getValue(UserModel.class).getImage(),
+                            date.getTime(),
+                            dataSnapshot.getValue(UserModel.class).getName()
+                    );
+                    Constants.databaseReference().child("chats").child(Constants.auth().getCurrentUser().getUid())
+                            .child(androidArrayList.get(position).getSellerID())
+                            .push()
+                            .setValue(conversation)
+                            .addOnSuccessListener(unused -> {
+                                tutorSide(position);
+                            }).addOnFailureListener(e -> {
+
+                            });
+                }).addOnFailureListener(e -> {
+
+                });
+    }
+
+    private void tutorSide(int position) {
+        date = new Date();
+        String d = format.format(date);
+
+        Constants.databaseReference().child("users")
+                .child(androidArrayList.get(position).getSellerID())
+                .get().addOnSuccessListener(dataSnapshot -> {
+                    Conversation conversation = new Conversation(
+                            "Thanks! For Enrolling into My Course If you need any help feel free to text me 😊",
+                            d,
+                            androidArrayList.get(position).getSellerID(),
+                            dataSnapshot.getValue(UserModel.class).getImage(),
+                            date.getTime(),
+                            dataSnapshot.getValue(UserModel.class).getName()
+                    );
+                    Constants.databaseReference().child("chats").child(androidArrayList.get(position).getSellerID())
+                            .child(Constants.auth().getCurrentUser().getUid())
+                            .push()
+                            .setValue(conversation)
+                            .addOnSuccessListener(unused -> {
+                            }).addOnFailureListener(e -> {
+
+                            });
+                }).addOnFailureListener(e -> {
+
+                });
     }
 
     @Override
