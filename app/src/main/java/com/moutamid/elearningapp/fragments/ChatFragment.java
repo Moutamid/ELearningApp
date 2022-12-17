@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -84,8 +85,9 @@ public class ChatFragment extends Fragment {
     }
 
     private void userSide() {
-        Constants.databaseReference().child("users").child(Constants.auth().getCurrentUser().getUid())
-                .child("enrolled").addValueEventListener(new ValueEventListener() {
+        Constants.databaseReference().child("enrolled").child(Constants.auth().getCurrentUser().getUid())
+                .addValueEventListener(new ValueEventListener() {
+                    @RequiresApi(api = Build.VERSION_CODES.N)
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         if (snapshot.exists()){
@@ -133,16 +135,58 @@ public class ChatFragment extends Fragment {
     }
 
     private void instructorSide() {
-        Constants.databaseReference().child("users").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                
-            }
+        Constants.databaseReference().child("enrolled")
+                .addValueEventListener(new ValueEventListener(){
+                    @RequiresApi(api = Build.VERSION_CODES.N)
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if (snapshot.exists()) {
+                            for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                                for (DataSnapshot ds : dataSnapshot.getChildren()){
+                                    CourseIDs ids = ds.getValue(CourseIDs.class);
+                                    if (ids.getSellerID().equals(Constants.auth().getCurrentUser().getUid())){
+                                        Log.d("IDS Checl", ids.getSellerID() + " " + Constants.auth().getCurrentUser().getUid() + " " + ids.getUserID());
+                                        if (!ids.getUserID().equals(Constants.auth().getCurrentUser().getUid())){
+                                            IDS.add(ids.getUserID());
+                                        }
+                                    }
+                                }
+                            }
+                            showTutorChat();
+                        }
+                    }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
 
-            }
-        });
+                    }
+                });
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    private void showTutorChat() {
+        List<String> newList = IDS.stream().distinct().collect(Collectors.toList());
+        for (int i = 0; i < newList.size(); i++) {
+            int finalI = i;
+            Constants.databaseReference().child("users").child(newList.get(i))
+                    .addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            chats.add(new ChatList(newList.get(finalI),
+                                    snapshot.getValue(UserModel.class).getImage(),
+                                    snapshot.getValue(UserModel.class).getName(),
+                                    ""
+                            ));
+                            adapterChat = new ChatListAdapter(context, chats);
+                            chatRC.setAdapter(adapterChat);
+                            adapterChat.notifyItemInserted(chats.size()-1);
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+
+                        }
+                    });
+        }
     }
 }

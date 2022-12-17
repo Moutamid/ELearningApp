@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Build;
@@ -44,6 +45,7 @@ public class ChatActivity extends AppCompatActivity {
     CircleImageView imageV;
     SimpleDateFormat format = new SimpleDateFormat("HH:mm aa");
     Date date;
+    String msg;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +58,9 @@ public class ChatActivity extends AppCompatActivity {
         chatRC = findViewById(R.id.recyclerView_chat);
         nameV = findViewById(R.id.name);
         imageV = findViewById(R.id.image);
+
+        chatRC.setLayoutManager(new LinearLayoutManager(this));
+        chatRC.setHasFixedSize(false);
 
         conversationArrayList = new ArrayList<>();
 
@@ -73,13 +78,15 @@ public class ChatActivity extends AppCompatActivity {
 
         send.setOnClickListener(v -> {
             if (!message.getText().toString().isEmpty()){
+                msg = message.getText().toString();
+                message.setText("");
                 date = new Date();
                 String d = format.format(date);
                 Constants.databaseReference().child("users")
                         .child(Constants.auth().getCurrentUser().getUid())
                         .get().addOnSuccessListener(dataSnapshot -> {
                             Conversation conversation = new Conversation(
-                                    message.getText().toString(),
+                                    msg,
                                     d,
                                     Constants.auth().getCurrentUser().getUid(),
                                     dataSnapshot.getValue(UserModel.class).getImage(),
@@ -113,6 +120,7 @@ public class ChatActivity extends AppCompatActivity {
                             conversationArrayList.sort(Comparator.comparing(Conversation::getTimestamps));
                             adapterChat = new Adapter_Chat(ChatActivity.this, conversationArrayList);
                             chatRC.setAdapter(adapterChat);
+                            chatRC.scrollToPosition(conversationArrayList.size()-1);
                             adapterChat.notifyItemInserted(conversationArrayList.size()-1);
                         }
                     }
@@ -154,7 +162,7 @@ public class ChatActivity extends AppCompatActivity {
                 .child(ID)
                 .get().addOnSuccessListener(dataSnapshot -> {
                     Conversation conversation = new Conversation(
-                            message.getText().toString(),
+                            msg,
                             d,
                             Constants.auth().getCurrentUser().getUid(),
                             dataSnapshot.getValue(UserModel.class).getImage(),
@@ -166,7 +174,7 @@ public class ChatActivity extends AppCompatActivity {
                             .push()
                             .setValue(conversation)
                             .addOnSuccessListener(unused -> {
-                                message.setText("");
+
                             }).addOnFailureListener(e -> {
 
                             });

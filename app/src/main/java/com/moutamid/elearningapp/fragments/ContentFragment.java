@@ -73,34 +73,36 @@ public class ContentFragment extends Fragment {
                 .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if (snapshot.exists()) {
                             Model_Content model = snapshot.getValue(Model_Content.class);
                             videoURL = model.getVideo_link();
-                            if (Constants.auth().getCurrentUser().getUid() != null){
-                                Constants.databaseReference().child("users").child(Constants.auth().getCurrentUser().getUid())
-                                    .child("enrolled").child(course_ID)
-                                    .addValueEventListener(new ValueEventListener() {
-                                        @Override
-                                        public void onDataChange(@NonNull DataSnapshot snapshot2) {
-                                            if(snapshot2.exists()) {
-                                                CourseIDs model = snapshot2.getValue(CourseIDs.class);
-                                                if (model.isEnroll()) {
-                                                    setVideo(videoURL);
-                                                    lockLayout.setVisibility(View.GONE);
+                            if (Constants.auth().getCurrentUser() != null) {
+                                Constants.databaseReference().child("enrolled").child(Constants.auth().getCurrentUser().getUid())
+                                        .child(course_ID)
+                                        .addValueEventListener(new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(@NonNull DataSnapshot snapshot2) {
+                                                if (snapshot2.exists()) {
+                                                    CourseIDs model = snapshot2.getValue(CourseIDs.class);
+                                                    if (model.isEnroll()) {
+                                                        setVideo(videoURL);
+                                                        lockLayout.setVisibility(View.GONE);
+                                                    } else {
+                                                        lockLayout.setVisibility(View.VISIBLE);
+                                                    }
                                                 } else {
                                                     lockLayout.setVisibility(View.VISIBLE);
                                                 }
-                                            } else {
+                                            }
+
+                                            @Override
+                                            public void onCancelled(@NonNull DatabaseError e) {
+                                                Toast.makeText(view.getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                                                Log.d("Checking21", "error");
                                                 lockLayout.setVisibility(View.VISIBLE);
                                             }
-                                        }
-
-                                        @Override
-                                        public void onCancelled(@NonNull DatabaseError e) {
-                                            Toast.makeText(view.getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
-                                            Log.d("Checking21", "error");
-                                            lockLayout.setVisibility(View.VISIBLE);
-                                        }
-                                    });
+                                        });
+                            }
                         }
                     }
 

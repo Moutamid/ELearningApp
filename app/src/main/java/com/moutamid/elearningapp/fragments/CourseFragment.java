@@ -57,9 +57,9 @@ public class CourseFragment extends Fragment {
 
         model = new Model_Content();
 
-        if (Constants.auth().getCurrentUser().getUid() != null){
-            Constants.databaseReference().child("users").child(Constants.auth().getCurrentUser().getUid())
-                    .child("enrolled").child(course_ID)
+        if (Constants.auth().getCurrentUser() != null){
+            Constants.databaseReference().child("enrolled").child(Constants.auth().getCurrentUser().getUid())
+                    .child(course_ID)
                     .addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot snapshot) {

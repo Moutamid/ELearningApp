@@ -75,9 +75,9 @@ public class CommunityFragment extends Fragment {
 
         listChat = new ArrayList<>();
 
-        if (Constants.auth().getCurrentUser().getUid() != null){
-            Constants.databaseReference().child("users").child(Constants.auth().getCurrentUser().getUid())
-                    .child("enrolled").child(course_ID)
+        if (Constants.auth().getCurrentUser() != null){
+            Constants.databaseReference().child("enrolled").child(Constants.auth().getCurrentUser().getUid())
+                    .child(course_ID)
                     .addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot snapshot2) {
@@ -107,9 +107,10 @@ public class CommunityFragment extends Fragment {
                     });
         }
 
-
         send.setOnClickListener(v -> {
             if (!mesg.getText().toString().isEmpty()){
+                String msg = mesg.getText().toString();
+                mesg.setText("");
                 date = new Date();
                 UID = UUID.randomUUID().toString();
                 String d = format.format(date);
@@ -118,7 +119,10 @@ public class CommunityFragment extends Fragment {
                 Constants.databaseReference().child("users").child(Constants.auth().getCurrentUser().getUid()).addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        modelChat = new Modal_Community_Chat(mesg.getText().toString(), d, Constants.auth().getCurrentUser().getUid(), snapshot.getValue(UserModel.class).getName(), snapshot.getValue(UserModel.class).getImage(), snapshot.getValue(UserModel.class).isInstructor(), date.getTime());
+                        modelChat = new Modal_Community_Chat(msg, d,
+                                Constants.auth().getCurrentUser().getUid(), snapshot.getValue(UserModel.class).getName(),
+                                snapshot.getValue(UserModel.class).getImage(), snapshot.getValue(UserModel.class).isInstructor(),
+                                date.getTime());
                         Constants.databaseReference().child("community_chat").child(course_ID)
                                 .child(UID)
                                 .setValue(modelChat).addOnSuccessListener(unused -> {
@@ -150,6 +154,8 @@ public class CommunityFragment extends Fragment {
                             adapterChat = new Adapter_Community_Chat(context, listChat);
                             rc_community.setAdapter(adapterChat);
                             adapterChat.notifyItemInserted(listChat.size()-1);
+
+                            rc_community.scrollToPosition(listChat.size()-1);
                         }
                     }
 

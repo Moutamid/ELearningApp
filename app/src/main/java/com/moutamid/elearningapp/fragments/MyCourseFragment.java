@@ -49,8 +49,8 @@ public class MyCourseFragment extends Fragment {
         courseIDs = new ArrayList<>();
 
         if (Constants.auth().getCurrentUser() != null){
-            Constants.databaseReference().child("users").child(Constants.auth().getCurrentUser().getUid())
-                    .child("enrolled").get()
+            Constants.databaseReference().child("enrolled").child(Constants.auth().getCurrentUser().getUid())
+                    .get()
                     .addOnSuccessListener(dataSnapshot -> {
                         for (DataSnapshot ds : dataSnapshot.getChildren()) {
                             CourseIDs model = ds.getValue(CourseIDs.class);

@@ -25,6 +25,7 @@ import com.moutamid.elearningapp.models.Model_Content;
 import com.moutamid.elearningapp.models.UserModel;
 import com.moutamid.elearningapp.utilis.Constants;
 
+import java.util.HashMap;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -165,16 +166,32 @@ public class UploadContentActivity extends AppCompatActivity {
                     Constants.databaseReference().child("course_contents")
                             .child(uuID).setValue(model_content)
                             .addOnSuccessListener(unused -> {
-                                Toast.makeText(getApplicationContext(), "Course Uploaded Successfully", Toast.LENGTH_SHORT).show();
-                                Intent homeIntent = new Intent(UploadContentActivity.this, MainActivity.class);
-                                startActivity(homeIntent);
-                                Animatoo.animateFade(UploadContentActivity.this);
-                                finish();
+                                enrolled();
                             }).addOnFailureListener(e -> {
                                 Toast.makeText(UploadContentActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
                             });
                 }).addOnFailureListener(e -> {
                     Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
+    }
+
+    private void enrolled() {
+        HashMap<String, Object> courseIDs = new HashMap<>();
+        courseIDs.put("ID", uuID);
+        courseIDs.put("enroll", true);
+        courseIDs.put("userID", Constants.auth().getCurrentUser().getUid());
+        courseIDs.put("sellerID", Constants.auth().getCurrentUser().getUid());
+        Constants.databaseReference().child("enrolled").child(Constants.auth().getCurrentUser().getUid())
+                .child(uuID)
+                .setValue(courseIDs)
+                .addOnSuccessListener(unused -> {
+                    Toast.makeText(getApplicationContext(), "Course Uploaded Successfully", Toast.LENGTH_SHORT).show();
+                    Intent homeIntent = new Intent(UploadContentActivity.this, MainActivity.class);
+                    startActivity(homeIntent);
+                    Animatoo.animateFade(UploadContentActivity.this);
+                    finish();
+                }).addOnFailureListener(e -> {
+
                 });
     }
 

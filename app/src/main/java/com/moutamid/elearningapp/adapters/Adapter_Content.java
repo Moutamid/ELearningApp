@@ -48,7 +48,7 @@ public class Adapter_Content extends RecyclerView.Adapter<Adapter_Content.Holder
         holder.card_vedio.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                /*Intent intent = new Intent(context , Vedio_Play_Activity.class);
+                /*Intent intent = new Intent(context, Vedio_Play_Activity.class);
                 context.startActivity(intent);
                 Animatoo.animateFade(context);*/
             }

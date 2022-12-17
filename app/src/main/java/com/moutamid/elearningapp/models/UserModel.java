@@ -3,6 +3,7 @@ package com.moutamid.elearningapp.models;
 public class UserModel {
     String name, email, password, coursename, coursedes, image;
     boolean isInstructor;
+    CourseIDs enrolled;
 
     public UserModel() {}
 
@@ -16,12 +17,29 @@ public class UserModel {
         this.isInstructor = isInstructor;
     }
 
+    public UserModel(String name, String email, String password, String image, boolean isInstructor, CourseIDs enrolled) {
+        this.name = name;
+        this.email = email;
+        this.password = password;
+        this.image = image;
+        this.isInstructor = isInstructor;
+        this.enrolled = enrolled;
+    }
+
     public UserModel(String name, String email, String password, String image, boolean isInstructor) {
         this.name = name;
         this.email = email;
         this.password = password;
         this.image = image;
         this.isInstructor = isInstructor;
+    }
+
+    public CourseIDs getEnrolled() {
+        return enrolled;
+    }
+
+    public void setEnrolled(CourseIDs enrolled) {
+        this.enrolled = enrolled;
     }
 
     public String getName() {

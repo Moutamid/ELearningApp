@@ -83,8 +83,7 @@ public class Adapter_Courses extends RecyclerView.Adapter<Adapter_Courses.Holder
         holder.desc.setText(modelAndroid.getDesc());
 
         try {
-            Constants.databaseReference().child("users").child(Constants.auth().getCurrentUser().getUid())
-                    .child("enrolled")
+            Constants.databaseReference().child("enrolled").child(Constants.auth().getCurrentUser().getUid())
                     .addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -136,8 +135,8 @@ public class Adapter_Courses extends RecyclerView.Adapter<Adapter_Courses.Holder
                 courseIDs.put("userID", Constants.auth().getCurrentUser().getUid());
                 courseIDs.put("sellerID", modelAndroid.getSellerID());
                 update.put("member", modelAndroid.getMember() + 1);
-                Constants.databaseReference().child("users").child(Constants.auth().getCurrentUser().getUid())
-                        .child("enrolled").child(modelAndroid.getCourse_id()).setValue(courseIDs)
+                Constants.databaseReference().child("enrolled").child(Constants.auth().getCurrentUser().getUid())
+                        .child(modelAndroid.getCourse_id()).setValue(courseIDs)
                         .addOnSuccessListener(unused -> {
                             Constants.databaseReference().child("course_contents").child(modelAndroid.getCourse_id())
                                     .updateChildren(update)
