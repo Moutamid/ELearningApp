@@ -127,15 +127,14 @@ public class Adapter_Courses extends RecyclerView.Adapter<Adapter_Courses.Holder
             Animatoo.animateFade(context);
         });
 
-        HashMap<String, Object> courseIDs = new HashMap<>();
-        courseIDs.put("ID", modelAndroid.getCourse_id());
-        courseIDs.put("enroll", true);
-        courseIDs.put("userID", Constants.auth().getCurrentUser().getUid());
-        courseIDs.put("sellerID", modelAndroid.getSellerID());
-
         holder.enroll.setOnClickListener(view -> {
             if (Constants.auth().getCurrentUser() != null){
                 progressDialog.show();
+                HashMap<String, Object> courseIDs = new HashMap<>();
+                courseIDs.put("ID", modelAndroid.getCourse_id());
+                courseIDs.put("enroll", true);
+                courseIDs.put("userID", Constants.auth().getCurrentUser().getUid());
+                courseIDs.put("sellerID", modelAndroid.getSellerID());
                 update.put("member", modelAndroid.getMember() + 1);
                 Constants.databaseReference().child("users").child(Constants.auth().getCurrentUser().getUid())
                         .child("enrolled").child(modelAndroid.getCourse_id()).setValue(courseIDs)

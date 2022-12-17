@@ -48,19 +48,21 @@ public class MyCourseFragment extends Fragment {
         modelEnrolledArrayList = new ArrayList<>();
         courseIDs = new ArrayList<>();
 
-        Constants.databaseReference().child("users").child(Objects.requireNonNull(Constants.auth().getCurrentUser()).getUid())
-                .child("enrolled").get()
-                .addOnSuccessListener(dataSnapshot -> {
-                    for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                        CourseIDs model = ds.getValue(CourseIDs.class);
-                        if(model.isEnroll()) {
-                            courseIDs.add(model);
+        if (Constants.auth().getCurrentUser() != null){
+            Constants.databaseReference().child("users").child(Constants.auth().getCurrentUser().getUid())
+                    .child("enrolled").get()
+                    .addOnSuccessListener(dataSnapshot -> {
+                        for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                            CourseIDs model = ds.getValue(CourseIDs.class);
+                            if(model.isEnroll()) {
+                                courseIDs.add(model);
+                            }
                         }
-                    }
-                    getCourses();
-                }).addOnFailureListener(e -> {
-                    Toast.makeText(view.getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
-                });
+                        getCourses();
+                    }).addOnFailureListener(e -> {
+                        Toast.makeText(view.getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                    });
+        }
 
         return view;
     }
