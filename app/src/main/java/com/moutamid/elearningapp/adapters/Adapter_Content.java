@@ -2,7 +2,6 @@ package com.moutamid.elearningapp.adapters;
 
 
 import android.content.Context;
-import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,7 +11,8 @@ import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.blogspot.atifsoftwares.animatoolib.Animatoo;
+import com.bumptech.glide.Glide;
+import com.moutamid.elearningapp.CoursesClickListner;
 import com.moutamid.elearningapp.R;
 import com.moutamid.elearningapp.models.Model_Content;
 
@@ -23,9 +23,12 @@ public class Adapter_Content extends RecyclerView.Adapter<Adapter_Content.Holder
     private Context context;
     private ArrayList<Model_Content> androidArrayList;
 
-    public Adapter_Content(Context context, ArrayList<Model_Content> androidArrayList) {
+    CoursesClickListner coursesClickListner;
+
+    public Adapter_Content(Context context, ArrayList<Model_Content> androidArrayList, CoursesClickListner coursesClickListner) {
         this.context = context;
         this.androidArrayList = androidArrayList;
+        this.coursesClickListner = coursesClickListner;
     }
 
     @NonNull
@@ -40,19 +43,12 @@ public class Adapter_Content extends RecyclerView.Adapter<Adapter_Content.Holder
         Model_Content modelAndroid = androidArrayList.get(position);
 
         String title_tv = modelAndroid.getTitle();
-        String image_1 = modelAndroid.getVideo_link();
+        String image_1 = modelAndroid.getImage();
 
         holder.title.setText(title_tv);
-        holder.image.setImageResource(0);
+        Glide.with(context).load(image_1).into(holder.image);
 
-        holder.card_vedio.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                /*Intent intent = new Intent(context, Vedio_Play_Activity.class);
-                context.startActivity(intent);
-                Animatoo.animateFade(context);*/
-            }
-        });
+        holder.card_vedio.setOnClickListener(view -> coursesClickListner.onClick(androidArrayList.get(holder.getAbsoluteAdapterPosition())));
     }
 
     @Override

@@ -9,7 +9,7 @@
     <com.potyvideo.library.AndExoPlayerView
         android:id="@+id/vidvw2"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
+        android:layout_height="wrap_content"
         app:andexo_aspect_ratio="aspect_16_9"
         app:andexo_show_full_screen="true"
         app:andexo_resize_mode="Fit"
@@ -17,6 +17,7 @@
         app:andexo_show_controller="true" />
 
     <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rc_cotent"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/vidvw2" />

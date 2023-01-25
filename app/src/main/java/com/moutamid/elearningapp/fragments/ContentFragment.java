@@ -8,6 +8,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
@@ -23,6 +24,7 @@ import com.fxn.stash.Stash;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
+import com.moutamid.elearningapp.CoursesClickListner;
 import com.moutamid.elearningapp.R;
 import com.moutamid.elearningapp.adapters.Adapter_Content;
 import com.moutamid.elearningapp.models.CourseIDs;
@@ -32,6 +34,7 @@ import com.potyvideo.library.AndExoPlayerView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Objects;
 
 public class ContentFragment extends Fragment {
 
@@ -39,6 +42,9 @@ public class ContentFragment extends Fragment {
     String course_ID, sellerID;
     LinearLayout lockLayout;
     String videoURL;
+    RecyclerView courses;
+
+    ArrayList<Model_Content> list = new ArrayList<>();
 
     public ContentFragment() {
         // Required empty public constructor
@@ -49,7 +55,14 @@ public class ContentFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_content, container, false);
         lockLayout = view.findViewById(R.id.lockLayout);
 
+        course_ID = Stash.getString("ID");
+        sellerID = Stash.getString("sellerID");
+
         vw = view.findViewById(R.id.vidvw2);
+        courses = view.findViewById(R.id.rc_cotent);
+
+        courses.setLayoutManager(new LinearLayoutManager(view.getContext()));
+        courses.setHasFixedSize(false);
 
         /*vw.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
@@ -65,8 +78,28 @@ public class ContentFragment extends Fragment {
             }
         });*/
 
-        course_ID = Stash.getString("ID");
-        sellerID = Stash.getString("sellerID");
+        Constants.databaseReference().child("course_contents").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if(snapshot.exists()) {
+                    int i = 0;
+                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                        Model_Content model = dataSnapshot.getValue(Model_Content.class);
+                        if (Objects.equals(model.getSellerID(), sellerID)) {
+                            list.add(model);
+                        }
+                    }
+                    Adapter_Content content = new Adapter_Content(view.getContext(), list, coursesClickListner);
+                    courses.setAdapter(content);
+                    content.notifyDataSetChanged();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
 
         Constants.databaseReference().child("course_contents")
                 .child(course_ID)
@@ -129,6 +162,14 @@ public class ContentFragment extends Fragment {
         vw.setSource(videoURL, hashMap);
         vw.startPlayer();
     }
+
+    CoursesClickListner coursesClickListner = new CoursesClickListner() {
+        @Override
+        public void onClick(Model_Content model_content) {
+            vw.stopPlayer();
+            setVideo(model_content.getVideo_link());
+        }
+    };
 
 
     @Override
