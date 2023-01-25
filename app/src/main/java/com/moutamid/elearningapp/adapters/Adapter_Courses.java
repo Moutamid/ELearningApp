@@ -121,7 +121,6 @@ public class Adapter_Courses extends RecyclerView.Adapter<Adapter_Courses.Holder
         holder.itemView.setOnClickListener(v -> {
             Intent intent = new Intent(context , DisplayActivity.class);
             Stash.put("ID", modelAndroid.getCourse_id());
-            Toast.makeText(context, modelAndroid.getSellerID(), Toast.LENGTH_SHORT).show();
             Stash.put("sellerID", modelAndroid.getSellerID());
             context.startActivity(intent);
             Animatoo.animateFade(context);
