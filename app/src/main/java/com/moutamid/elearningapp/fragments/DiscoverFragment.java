@@ -31,6 +31,7 @@ import java.util.ArrayList;
 public class DiscoverFragment extends Fragment {
     private RecyclerView detail_recycler;
     private ArrayList<Model_Content> modelCoursesArrayList;
+    private ArrayList<Model_Content> newList;
     private Adapter_Courses adapter_courses;
     Model_Courses model_courses;
     BottomNavigationView bottomNavigationView;
@@ -50,6 +51,7 @@ public class DiscoverFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_discover, container, false);
         detail_recycler = view.findViewById(R.id.recyclerView_courses);
         modelCoursesArrayList = new ArrayList<>();
+        newList = new ArrayList<>();
 
         progressDialog = new ProgressDialog(view.getContext());
         progressDialog.setMessage("Please Wait....");
@@ -79,15 +81,17 @@ public class DiscoverFragment extends Fragment {
                 .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        for (DataSnapshot ds : snapshot.getChildren()) {
-                            Model_Content model = ds.getValue(Model_Content.class);
-                            modelCoursesArrayList.add(model);
-                            modelCoursesArrayList.add(model);
-                            modelCoursesArrayList.add(model);
+                        if (snapshot.exists()){
+                            modelCoursesArrayList.clear();
+                            for (DataSnapshot ds : snapshot.getChildren()) {
+                                Model_Content model = ds.getValue(Model_Content.class);
+                                modelCoursesArrayList.add(model);
+                            }
+
+                            adapter_courses = new Adapter_Courses(view.getContext(), modelCoursesArrayList);
+                            detail_recycler.setAdapter(adapter_courses);
+                            adapter_courses.notifyDataSetChanged();
                         }
-                        adapter_courses = new Adapter_Courses(view.getContext(), modelCoursesArrayList);
-                        detail_recycler.setAdapter(adapter_courses);
-                        adapter_courses.notifyDataSetChanged();
                         progressDialog.dismiss();
                     }
 

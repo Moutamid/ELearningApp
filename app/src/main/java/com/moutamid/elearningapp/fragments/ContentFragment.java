@@ -82,7 +82,7 @@ public class ContentFragment extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if(snapshot.exists()) {
-                    int i = 0;
+                    list.clear();
                     for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                         Model_Content model = dataSnapshot.getValue(Model_Content.class);
                         if (Objects.equals(model.getSellerID(), sellerID)) {
