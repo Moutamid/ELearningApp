@@ -16,7 +16,7 @@ import com.moutamid.elearningapp.fragments.SearchFragment;
 public class MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener  {
     BottomNavigationView bottomNavigationView;
 
-    DiscoverFragment discoverFragment = new DiscoverFragment();
+    DiscoverFragment discoverFragment;
     SearchFragment searchFragment = new SearchFragment();
     MyCourseFragment myCourseFragment = new MyCourseFragment();
     ChatFragment chatFragment = new ChatFragment();
@@ -28,6 +28,8 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         setContentView(R.layout.activity_main);
 
         bottomNavigationView = findViewById(R.id.bottomNavigationView);
+
+        discoverFragment = new DiscoverFragment(bottomNavigationView);
 
         bottomNavigationView.setOnNavigationItemSelectedListener(this);
         bottomNavigationView.setSelectedItemId(R.id.item1);

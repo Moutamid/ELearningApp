@@ -2,6 +2,7 @@ package com.moutamid.elearningapp.models;
 
 public class Model_Content {
     String course_id;
+    String content_id;
     String title;
     String desc;
     String Status, efficient;
@@ -41,6 +42,32 @@ public class Model_Content {
         this.category = category;
         this.price = price;
         this.sellerID = sellerID;
+    }
+
+    public Model_Content(String course_id, String content_id, String title, String desc, String status, String efficient, long member, String tutor, String video_length, boolean is_bestSeller, String video_link, String image, String category, long price, String sellerID) {
+        this.course_id = course_id;
+        this.content_id = content_id;
+        this.title = title;
+        this.desc = desc;
+        this.Status = status;
+        this.efficient = efficient;
+        this.member = member;
+        this.tutor = tutor;
+        this.video_length = video_length;
+        this.is_bestSeller = is_bestSeller;
+        this.video_link = video_link;
+        this.image = image;
+        this.category = category;
+        this.price = price;
+        this.sellerID = sellerID;
+    }
+
+    public String getContent_id() {
+        return content_id;
+    }
+
+    public void setContent_id(String content_id) {
+        this.content_id = content_id;
     }
 
     public String getSellerID() {
