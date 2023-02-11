@@ -15,6 +15,7 @@ import com.moutamid.elearningapp.LoginActivity;
 import com.moutamid.elearningapp.R;
 import com.moutamid.elearningapp.SignUpActivity;
 import com.moutamid.elearningapp.SignUpInstructorActivity;
+import com.moutamid.elearningapp.SplashScreenActivity;
 import com.moutamid.elearningapp.UploadContentActivity;
 import com.moutamid.elearningapp.models.UserModel;
 import com.moutamid.elearningapp.utilis.Constants;
@@ -61,7 +62,9 @@ public class AccountFragment extends Fragment {
         }
         logout.setOnClickListener(v -> {
             Constants.auth().signOut();
-            getActivity().recreate();
+            Intent intent = new Intent(getContext() , SplashScreenActivity.class);
+            Animatoo.animateFade(getContext());
+            startActivity(intent);
         });
         singIn.setOnClickListener(view14 -> {
             Intent intent = new Intent(getContext() , LoginActivity.class);

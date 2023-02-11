@@ -14,6 +14,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.blogspot.atifsoftwares.animatoolib.Animatoo;
+import com.moutamid.elearningapp.models.InstructorModel;
 import com.moutamid.elearningapp.models.UserModel;
 import com.moutamid.elearningapp.utilis.Constants;
 
@@ -23,12 +24,13 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class SignUpInstructorActivity extends AppCompatActivity {
     Button submit_login_btn;
-    CardView select_image;
-    CircleImageView profile_image;
+    CardView select_image, course_image;
+    CircleImageView profile_image, course_thumb;
     EditText name, email, password, cnfrmPass, coursename, courseDes;
     ProgressDialog progressDialog;
-    Uri uri;
+    Uri uriImage, uriCourse;
     private static final int IMAGE_REQUEST = 1;
+    private static final int COURSE_REQUEST = 2;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,6 +41,8 @@ public class SignUpInstructorActivity extends AppCompatActivity {
 
         select_image = findViewById(R.id.select_image);
         profile_image = findViewById(R.id.profile_image);
+        course_image = findViewById(R.id.course_image);
+        course_thumb = findViewById(R.id.course_thumb);
         name = findViewById(R.id.name_et);
         email = findViewById(R.id.email_et);
         password = findViewById(R.id.password_et);
@@ -46,12 +50,8 @@ public class SignUpInstructorActivity extends AppCompatActivity {
         courseDes = findViewById(R.id.coursedes_et);
         coursename = findViewById(R.id.coursename_et);
 
-        select_image.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                openImage();
-            }
-        });
+        select_image.setOnClickListener(view -> openImage(IMAGE_REQUEST));
+        course_image.setOnClickListener(view -> openImage(COURSE_REQUEST));
 
         submit_login_btn = findViewById(R.id.Register_btn);
         submit_login_btn.setOnClickListener(view -> {
@@ -64,36 +64,12 @@ public class SignUpInstructorActivity extends AppCompatActivity {
                 ).addOnSuccessListener(authResult -> {
                     Constants.storageReference(authResult.getUser().getUid())
                             .child("logo").child(authResult.getUser().getUid() + d.getTime())
-                            .putFile(uri).addOnSuccessListener(taskSnapshot -> {
+                            .putFile(uriImage).addOnSuccessListener(taskSnapshot -> {
                                 taskSnapshot.getStorage().getDownloadUrl().addOnSuccessListener(uri -> {
-                                    UserModel model = new UserModel(
-                                            name.getText().toString(),
-                                            email.getText().toString(),
-                                            password.getText().toString(),
-                                            coursename.getText().toString(),
-                                            courseDes.getText().toString(),
-                                            uri.toString(),
-                                            true
-                                    );
-                                    Constants.databaseReference().child("users")
-                                            .child(authResult.getUser().getUid())
-                                            .setValue(model)
-                                            .addOnSuccessListener(unused -> {
-                                                progressDialog.dismiss();
-                                                Toast.makeText(SignUpInstructorActivity.this, "Account Created Successfully", Toast.LENGTH_SHORT).show();
-                                                Intent homeIntent = new Intent(SignUpInstructorActivity.this, MainActivity.class);
-                                                startActivity(homeIntent);
-                                                Animatoo.animateFade(SignUpInstructorActivity.this);
-                                                finish();
-                                            }).addOnFailureListener(e -> {
-
-                                                progressDialog.dismiss();
-                                                Toast.makeText(SignUpInstructorActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
-                                            });
+                                    uploadUser(uri.toString());
                                 });
                             })
                             .addOnFailureListener(e -> {
-
                                 progressDialog.dismiss();
                                 Toast.makeText(SignUpInstructorActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
                             });
@@ -104,11 +80,49 @@ public class SignUpInstructorActivity extends AppCompatActivity {
             }
         });
     }
-    private void openImage() {
+
+    private void uploadUser(String image) {
+        Date d = new Date();
+        Constants.storageReference(Constants.auth().getCurrentUser().getUid())
+                .child("courseThumbs").child(Constants.auth().getCurrentUser().getUid() + d.getTime())
+                .putFile(uriImage).addOnSuccessListener(taskSnapshot -> {
+                    taskSnapshot.getStorage().getDownloadUrl().addOnSuccessListener(uri -> {
+                        UserModel model = new UserModel(
+                                name.getText().toString(),
+                                email.getText().toString(),
+                                password.getText().toString(),
+                                coursename.getText().toString(),
+                                courseDes.getText().toString(),
+                                image, uri.toString(), true
+                        );
+                        Constants.databaseReference().child("users")
+                                .child(Constants.auth().getCurrentUser().getUid())
+                                .setValue(model)
+                                .addOnSuccessListener(unused -> {
+                                    progressDialog.dismiss();
+                                    Toast.makeText(SignUpInstructorActivity.this, "Account Created Successfully", Toast.LENGTH_SHORT).show();
+                                    Intent homeIntent = new Intent(SignUpInstructorActivity.this, MainActivity.class);
+                                    startActivity(homeIntent);
+                                    Animatoo.animateFade(SignUpInstructorActivity.this);
+                                    finish();
+                                }).addOnFailureListener(e -> {
+                                    progressDialog.dismiss();
+                                    Toast.makeText(SignUpInstructorActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                                });
+                    });
+                })
+                .addOnFailureListener(e -> {
+                    progressDialog.dismiss();
+                    Toast.makeText(SignUpInstructorActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
+
+    }
+
+    private void openImage(int code) {
         Intent intent = new Intent();
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityForResult(intent, IMAGE_REQUEST);
+        startActivityForResult(Intent.createChooser(intent, ""), code);
     }
 
     private boolean validate() {
@@ -157,8 +171,12 @@ public class SignUpInstructorActivity extends AppCompatActivity {
             courseDes.requestFocus();
             return false;
         }
-        if (uri == null){
+        if (uriImage == null){
             Toast.makeText(this, "Please Upload an image", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        if (uriCourse == null){
+            Toast.makeText(this, "Please Upload an Course image", Toast.LENGTH_SHORT).show();
             return false;
         }
         return true;
@@ -168,12 +186,22 @@ public class SignUpInstructorActivity extends AppCompatActivity {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (resultCode == RESULT_OK){
-            uri = data.getData();
-            profile_image.setImageURI(uri);
-        }
-        else {
-            Toast.makeText(SignUpInstructorActivity.this, "No Image is Selected...", Toast.LENGTH_SHORT).show();
+        if (requestCode == 1){
+            if (resultCode == RESULT_OK){
+                uriImage = data.getData();
+                profile_image.setImageURI(uriImage);
+            }
+            else {
+                Toast.makeText(SignUpInstructorActivity.this, "No Image is Selected...", Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            if (resultCode == RESULT_OK){
+                uriCourse = data.getData();
+                course_thumb.setImageURI(uriCourse);
+            }
+            else {
+                Toast.makeText(SignUpInstructorActivity.this, "No Image is Selected...", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 }

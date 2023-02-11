@@ -1,6 +1,7 @@
 package com.moutamid.elearningapp.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,7 +10,10 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.blogspot.atifsoftwares.animatoolib.Animatoo;
 import com.bumptech.glide.Glide;
+import com.fxn.stash.Stash;
+import com.moutamid.elearningapp.DisplayActivity;
 import com.moutamid.elearningapp.R;
 import com.moutamid.elearningapp.models.Model_Content;
 
@@ -43,6 +47,14 @@ public class Adapter_Enrolled extends RecyclerView.Adapter<Adapter_Enrolled.Hold
         holder.tutor.setText(tutor_tv);
 
         Glide.with(context).load(modelAndroid.getImage()).into(holder.image);
+
+        holder.itemView.setOnClickListener(v -> {
+            Intent intent = new Intent(context , DisplayActivity.class);
+            Stash.put("ID", modelAndroid.getCourse_id());
+            Stash.put("sellerID", modelAndroid.getSellerID());
+            context.startActivity(intent);
+            Animatoo.animateFade(context);
+        });
 
     }
 

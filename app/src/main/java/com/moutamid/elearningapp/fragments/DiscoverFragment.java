@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.fxn.stash.Stash;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -85,7 +86,15 @@ public class DiscoverFragment extends Fragment {
                             modelCoursesArrayList.clear();
                             for (DataSnapshot ds : snapshot.getChildren()) {
                                 Model_Content model = ds.getValue(Model_Content.class);
-                                modelCoursesArrayList.add(model);
+                                if (Constants.auth().getCurrentUser() != null) {
+                                    if (!model.getSellerID().equals(Constants.auth().getCurrentUser().getUid())) {
+                                        if (Stash.getBoolean(model.getCourse_id(), true)) {
+                                            modelCoursesArrayList.add(model);
+                                        }
+                                    }
+                                } else {
+                                    modelCoursesArrayList.add(model);
+                                }
                             }
 
                             adapter_courses = new Adapter_Courses(view.getContext(), modelCoursesArrayList);

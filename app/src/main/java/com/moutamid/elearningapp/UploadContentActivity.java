@@ -190,6 +190,7 @@ public class UploadContentActivity extends AppCompatActivity {
                     startActivity(homeIntent);
                     Animatoo.animateFade(UploadContentActivity.this);
                     finish();
+                    progressDialog.dismiss();
                 }).addOnFailureListener(e -> {
 
                 });
@@ -248,7 +249,7 @@ public class UploadContentActivity extends AppCompatActivity {
                         taskSnapshot.getStorage().getDownloadUrl().addOnSuccessListener(uri -> {
                             videoLink = uri.toString();
                             getCourseData();
-                            progressDialogV.dismiss();
+                            //progressDialogV.dismiss();
                         }).addOnFailureListener(e -> {
                             progressDialogV.dismiss();
                             Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
@@ -259,7 +260,7 @@ public class UploadContentActivity extends AppCompatActivity {
                         Toast.makeText(UploadContentActivity.this, "Failed " + e.getMessage(), Toast.LENGTH_SHORT).show();
                     }).addOnProgressListener(taskSnapshot -> {
                         // show the progress bar
-                        double progress = (100.0 * taskSnapshot.getBytesTransferred() / taskSnapshot.getTotalByteCount());
+                        double progress = (100.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
                         progressDialog.setProgress((int) progress);
                     });
         }

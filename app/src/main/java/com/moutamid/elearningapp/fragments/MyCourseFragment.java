@@ -72,11 +72,13 @@ public class MyCourseFragment extends Fragment {
             Constants.databaseReference().child("course_contents")
                     .child(courseIDs.get(i).getID())
                     .get().addOnSuccessListener(dataSnapshot -> {
-                        Model_Content model = dataSnapshot.getValue(Model_Content.class);
-                        modelEnrolledArrayList.add(model);
-                        adapter_enrolled = new Adapter_Enrolled(context, modelEnrolledArrayList);
-                        detail_recycler.setAdapter(adapter_enrolled);
-                        adapter_enrolled.notifyDataSetChanged();
+                        if (dataSnapshot.exists()){
+                            Model_Content model = dataSnapshot.getValue(Model_Content.class);
+                            modelEnrolledArrayList.add(model);
+                            adapter_enrolled = new Adapter_Enrolled(context, modelEnrolledArrayList);
+                            detail_recycler.setAdapter(adapter_enrolled);
+                            adapter_enrolled.notifyDataSetChanged();
+                        }
                     })
                     .addOnFailureListener(e -> {
                         e.printStackTrace();

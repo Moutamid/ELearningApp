@@ -1,5 +1,6 @@
 package com.moutamid.elearningapp.adapters;
 
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -70,8 +71,8 @@ public class Adapter_Courses extends RecyclerView.Adapter<Adapter_Courses.Holder
     }
 
     @Override
-    public void onBindViewHolder(@NonNull HolderAndroid holder, int position) {
-        Model_Content modelAndroid = androidArrayList.get(position);
+    public void onBindViewHolder(@NonNull HolderAndroid holder, @SuppressLint("RecyclerView") int position) {
+        Model_Content modelAndroid = androidArrayList.get(holder.getAbsoluteAdapterPosition());
 
         holder.title.setText(modelAndroid.getTitle());
         holder.tutor.setText(modelAndroid.getTutor());
@@ -145,6 +146,7 @@ public class Adapter_Courses extends RecyclerView.Adapter<Adapter_Courses.Holder
                                         progressDialog.dismiss();
                                         Toast.makeText(context, "Enrolled To Course " + modelAndroid.getTitle() , Toast.LENGTH_SHORT).show();
                                         sendMessage(position);
+                                        Stash.put(modelAndroid.getCourse_id(), false);
                                     }).addOnFailureListener(e -> {
                                         progressDialog.dismiss();
                                         Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
